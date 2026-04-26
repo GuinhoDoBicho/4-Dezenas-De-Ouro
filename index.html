@@ -18,21 +18,62 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7f6;
             margin: 0;
-            padding: 15px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             user-select: none; 
+            min-height: 100vh;
+        }
+
+        /* TELA DE LOGIN */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 350px;
+            border-top: 5px solid var(--gold);
+        }
+
+        .login-box h2 { color: var(--primary); margin-bottom: 20px; }
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid var(--light);
+            border-radius: 8px;
+            font-size: 1.2em;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* CONTEÚDO PRINCIPAL (OCULTO INICIALMENTE) */
+        #main-app {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .container {
-            max-width: 600px;
-            width: 100%;
             background: white;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            box-sizing: border-box;
         }
 
         h1 { color: var(--gold); text-align: center; margin-bottom: 5px; font-size: 1.8em; text-transform: uppercase; }
@@ -82,7 +123,6 @@
         .btn-clear { background-color: var(--accent); }
         .btn-share { background-color: #2c3e50; grid-column: span 2; margin-top: 10px; border: 2px solid var(--gold) !important; }
 
-        /* Estilo do Resumo de Prêmios */
         .resumo-premios {
             background: var(--primary);
             color: white;
@@ -93,18 +133,7 @@
             border-bottom: 4px solid var(--gold);
         }
 
-        .resumo-premios span {
-            display: block;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--gold);
-        }
-
-        #resultado {
-            margin-top: 20px;
-            padding: 10px;
-            border-top: 2px solid var(--light);
-        }
+        .resumo-premios span { display: block; font-size: 1.2em; font-weight: bold; color: var(--gold); }
 
         .jogo-item {
             background: #f9f9f9;
@@ -112,175 +141,147 @@
             margin-bottom: 8px;
             border-radius: 6px;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 0.95em;
             border-left: 5px solid var(--gold);
-            line-height: 1.4;
         }
 
         .hit { background-color: #f1c40f; color: black; font-weight: bold; padding: 2px 4px; border-radius: 3px; }
 
-        footer {
-            margin-top: 30px;
-            padding: 20px;
-            font-weight: bold;
-            color: var(--primary);
-            text-align: center;
-        }
-
+        footer { margin: 30px 0; font-weight: bold; color: var(--primary); text-align: center; }
         .divider { height: 2px; background: var(--light); margin: 25px 0; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-<div class="container">
-    <h1>4 Dezenas de Ouro</h1>
-    <p class="info">Lotinha 25-19-15-15</p>
-    
-    <h3>1. Selecione 4 Fixas</h3>
-    <div class="selector-grid" id="grid-fixas"></div>
-
-    <div class="controls">
-        <button class="action-btn btn-generate" onclick="gerarJogos()">Gerar 60 Jogos</button>
-        <button class="action-btn btn-clear" onclick="limparTudo()">Limpar Tudo</button>
-        <button class="action-btn btn-share" id="btn-share" onclick="compartilhar()" style="display:none;">📲 Compartilhar / Copiar Jogos</button>
+<div id="login-screen">
+    <div class="login-box">
+        <h1>4 Dezenas de Ouro</h1>
+        <p>Acesso Restrito</p>
+        <input type="password" id="pass-input" placeholder="Digite sua senha">
+        <button class="action-btn btn-generate" style="width: 100%;" onclick="validarSenha()">Entrar no Sistema</button>
+        <p id="error-msg" style="color: red; display: none; margin-top: 10px; font-size: 0.8em;">Senha incorreta!</p>
     </div>
-
-    <div id="area-conferidor" style="display:none;">
-        <div class="divider"></div>
-        <h3>2. Conferidor Visual</h3>
-        <p class="info">Marque o resultado (15 dezenas) para conferir.</p>
-        <div class="selector-grid" id="grid-conferidor"></div>
-        
-        <div id="painel-resumo" class="resumo-premios" style="display:none;"></div>
-    </div>
-
-    <div id="resultado"></div>
 </div>
 
-<footer>Criado por Guinho Lotofacil</footer>
+<div id="main-app">
+    <div class="container">
+        <h1>4 Dezenas de Ouro</h1>
+        <p class="info">Lotinha 25-19-15-15</p>
+        
+        <h3>1. Selecione 4 Fixas</h3>
+        <div class="selector-grid" id="grid-fixas"></div>
+
+        <div class="controls">
+            <button class="action-btn btn-generate" onclick="gerarJogos()">Gerar 60 Jogos</button>
+            <button class="action-btn btn-clear" onclick="limparTudo()">Limpar Tudo</button>
+            <button class="action-btn btn-share" id="btn-share" onclick="compartilhar()" style="display:none;">📲 Compartilhar / Copiar Jogos</button>
+        </div>
+
+        <div id="area-conferidor" style="display:none;">
+            <div class="divider"></div>
+            <h3>2. Conferidor Visual</h3>
+            <div class="selector-grid" id="grid-conferidor"></div>
+            <div id="painel-resumo" class="resumo-premios" style="display:none;"></div>
+        </div>
+
+        <div id="resultado"></div>
+    </div>
+    <footer>Criado por Guinho Lotofacil</footer>
+</div>
 
 <script>
-    // BLOQUEIO DE TECLADO
-    document.onkeydown = function(e) {
-        if(event.keyCode == 123) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+    // LÓGICA DE SENHA E PERSISTÊNCIA
+    const SENHA_MESTRA = "484646";
+
+    window.onload = function() {
+        if (localStorage.getItem("acesso_ouro") === "true") {
+            liberarSite();
+        }
     };
 
+    function validarSenha() {
+        const input = document.getElementById("pass-input").value;
+        if (input === SENHA_MESTRA) {
+            localStorage.setItem("acesso_ouro", "true");
+            liberarSite();
+        } else {
+            document.getElementById("error-msg").style.display = "block";
+        }
+    }
+
+    function liberarSite() {
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("main-app").style.display = "block";
+    }
+
+    // BLOQUEIO DE PROTEÇÃO
+    document.onkeydown = function(e) {
+        if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
+    };
+
+    // LÓGICA DA LOTERIA
     const totalDezenas = 25;
     let selecionadasFixas = [];
     let selecionadasResultado = [];
     let jogosGerados = [];
 
-    // Matriz original convertida
     const matrizBase = [[1,2,3,4,5,6,7,8,10,12,13,15,17,18,19,20,23,24,25],[1,2,3,4,5,6,7,8,11,12,13,14,17,20,21,22,23,24,25],[1,2,3,4,5,6,7,8,11,12,13,16,17,18,19,20,21,23,24],[1,2,3,4,5,6,7,9,11,12,13,14,18,19,20,21,23,24,25],[1,2,3,4,5,6,7,9,12,14,16,17,18,19,20,21,23,24,25],[1,2,3,4,5,6,8,9,11,12,13,14,17,18,19,20,22,23,25],[1,2,3,4,5,6,8,9,11,12,13,16,17,18,19,20,21,22,23],[1,2,3,4,5,6,8,12,13,14,16,17,18,20,21,22,23,24,25],[1,2,3,4,5,6,9,10,12,13,14,15,17,18,19,20,21,22,23],[1,2,3,4,5,6,10,11,12,13,14,15,17,18,19,20,21,23,25],[1,2,3,4,5,7,8,9,10,11,12,16,17,19,20,22,23,24,25],[1,2,3,4,5,7,10,12,13,14,15,16,17,19,20,21,22,23,25],[1,2,3,5,6,7,8,9,10,12,13,14,15,18,20,21,22,23,24],[1,2,3,5,6,7,8,9,11,12,13,14,17,18,19,20,21,23,25],[1,2,3,5,6,7,8,10,11,12,13,15,16,17,18,20,21,23,24],[1,2,3,5,6,7,11,12,14,16,17,18,19,20,21,22,23,24,25],[1,2,3,5,6,8,9,10,11,12,14,17,18,19,20,21,22,23,25],[1,2,3,5,7,9,10,11,12,14,15,17,18,19,20,22,23,24,25],[1,2,3,5,7,9,11,12,13,14,16,17,18,19,20,22,23,24,25],[1,2,4,5,6,7,8,9,10,11,12,14,17,18,19,20,22,23,24],[1,2,4,5,6,7,8,9,10,12,14,17,19,20,21,22,23,24,25],[1,2,4,5,6,7,8,9,12,13,14,16,18,19,20,21,22,23,25],[1,2,4,5,6,7,9,12,13,14,15,18,19,20,21,22,23,24,25],[1,2,4,5,6,9,12,13,14,15,16,17,18,19,20,21,23,24,25],[1,2,4,5,7,8,9,11,12,13,14,16,17,19,20,21,22,23,25],[1,2,4,5,7,8,10,12,13,14,16,18,19,20,21,22,23,24,25],[1,2,5,6,7,8,10,11,12,13,14,16,17,18,19,20,21,23,24],[1,2,5,6,8,10,11,12,13,14,16,17,18,19,20,22,23,24,25],[1,3,4,5,6,7,8,9,11,12,15,16,17,18,20,22,23,24,25],[1,3,4,5,6,7,8,9,12,13,14,16,17,18,19,20,22,23,25],[1,3,4,5,6,8,9,10,12,13,14,15,16,17,18,19,20,23,24],[1,3,4,5,6,8,10,11,12,13,14,15,16,17,18,20,21,22,23],[1,3,4,5,7,8,9,11,12,13,14,15,16,17,18,20,21,23,25],[1,3,4,5,7,9,10,11,12,14,16,17,18,19,20,21,22,23,24],[1,3,4,5,7,9,11,12,13,14,15,16,17,18,20,21,23,24,25],[1,3,5,6,7,8,9,11,12,13,14,15,18,19,20,21,23,24,25],[1,3,5,6,7,8,10,11,12,13,14,16,17,18,20,21,22,23,24],[1,3,5,6,7,9,11,12,13,14,15,16,18,19,20,21,22,23,25],[1,3,5,6,7,9,12,13,15,16,17,18,19,20,21,22,23,24,25],[1,3,5,6,7,10,11,12,13,14,15,16,17,18,19,20,23,24,25],[1,3,5,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],[1,4,5,6,7,8,11,12,13,14,15,17,18,19,20,21,22,23,25],[1,5,6,7,8,10,11,12,13,14,17,18,19,20,21,22,23,24,25],[2,3,4,5,6,7,8,9,12,14,15,16,19,20,21,22,23,24,25],[2,3,4,5,6,7,8,10,11,12,13,14,17,19,20,21,22,23,24],[2,3,4,5,6,7,9,10,11,12,13,16,18,19,20,21,22,23,25],[2,3,4,5,6,7,9,10,12,13,14,16,17,19,20,21,22,23,24],[2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,23,24,25],[2,3,4,5,6,8,9,11,12,13,14,15,16,19,20,21,22,23,24],[2,3,4,5,6,8,9,11,12,13,14,15,17,18,20,21,23,24,25],[2,3,4,5,7,9,11,12,13,14,16,17,18,19,20,21,22,23,25],[2,3,4,5,7,10,11,12,13,14,15,17,18,19,20,21,22,23,24],[2,3,4,5,8,9,10,11,12,13,14,15,16,18,19,20,22,23,24],[2,3,5,6,7,8,11,12,13,14,15,16,17,18,20,21,22,23,24],[2,3,5,6,8,9,10,11,12,15,17,18,19,20,21,22,23,24,25],[2,3,5,7,8,9,10,11,12,13,14,16,17,19,20,21,22,23,25],[3,4,5,6,7,8,9,10,12,13,15,17,18,20,21,22,23,24,25],[3,4,5,8,9,11,12,13,14,15,16,17,18,19,20,22,23,24,25],[4,5,6,8,9,11,12,13,14,16,17,18,19,20,21,22,23,24,25],[4,5,7,8,9,10,11,12,14,15,16,17,18,19,20,21,22,23,24]];
 
-    const gridFixas = document.getElementById('grid-fixas');
-    const gridConf = document.getElementById('grid-conferidor');
+    const gFixas = document.getElementById('grid-fixas');
+    const gConf = document.getElementById('grid-conferidor');
 
     for (let i = 1; i <= totalDezenas; i++) {
-        const btnF = document.createElement('button');
-        btnF.className = 'num-btn';
-        btnF.innerText = i.toString().padStart(2, '0');
-        btnF.onclick = () => toggleFixa(i, btnF);
-        gridFixas.appendChild(btnF);
+        const bF = document.createElement('button');
+        bF.className = 'num-btn'; bF.innerText = i.toString().padStart(2, '0');
+        bF.onclick = () => toggleFixa(i, bF); gFixas.appendChild(bF);
 
-        const btnC = document.createElement('button');
-        btnC.className = 'num-btn';
-        btnC.innerText = i.toString().padStart(2, '0');
-        btnC.onclick = () => toggleResultado(i, btnC);
-        gridConf.appendChild(btnC);
+        const bC = document.createElement('button');
+        bC.className = 'num-btn'; bC.innerText = i.toString().padStart(2, '0');
+        bC.onclick = () => toggleResultado(i, bC); gConf.appendChild(bC);
     }
 
-    function toggleFixa(num, btn) {
-        if (selecionadasFixas.includes(num)) {
-            selecionadasFixas = selecionadasFixas.filter(n => n !== num);
-            btn.classList.remove('selected-fixa');
-        } else {
-            if (selecionadasFixas.length < 4) {
-                selecionadasFixas.push(num);
-                btn.classList.add('selected-fixa');
-            } else {
-                alert("Selecione apenas 4 fixas!");
-            }
-        }
+    function toggleFixa(n, b) {
+        if (selecionadasFixas.includes(n)) { selecionadasFixas = selecionadasFixas.filter(x => x !== n); b.classList.remove('selected-fixa'); }
+        else if (selecionadasFixas.length < 4) { selecionadasFixas.push(n); b.classList.add('selected-fixa'); }
     }
 
-    function toggleResultado(num, btn) {
-        if (selecionadasResultado.includes(num)) {
-            selecionadasResultado = selecionadasResultado.filter(n => n !== num);
-            btn.classList.remove('selected-check');
-        } else {
-            if (selecionadasResultado.length < 15) {
-                selecionadasResultado.push(num);
-                btn.classList.add('selected-check');
-            } else {
-                alert("Você já marcou 15 dezenas do resultado!");
-            }
-        }
+    function toggleResultado(n, b) {
+        if (selecionadasResultado.includes(n)) { selecionadasResultado = selecionadasResultado.filter(x => x !== n); b.classList.remove('selected-check'); }
+        else if (selecionadasResultado.length < 15) { selecionadasResultado.push(n); b.classList.add('selected-check'); }
         if (jogosGerados.length > 0) conferir();
     }
 
     function gerarJogos() {
-        if (selecionadasFixas.length !== 4) {
-            alert("Selecione 4 fixas primeiro.");
-            return;
-        }
-        const fixasUser = [...selecionadasFixas].sort((a,b) => a-b);
-        const variaveisUser = [];
-        for(let i=1; i<=25; i++) if(!fixasUser.includes(i)) variaveisUser.push(i);
-        const fixasOriginais = [5, 12, 20, 23];
-        const variaveisOriginais = [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 25];
-        jogosGerados = matrizBase.map(linha => {
-            return linha.map(num => {
-                if(fixasOriginais.includes(num)) return fixasUser[fixasOriginais.indexOf(num)];
-                else return variaveisUser[variaveisOriginais.indexOf(num)];
-            }).sort((a,b) => a-b);
-        });
+        if (selecionadasFixas.length !== 4) return alert("Selecione 4 fixas.");
+        const fUser = [...selecionadasFixas].sort((a,b)=>a-b);
+        const vUser = []; for(let i=1;i<=25;i++) if(!fUser.includes(i)) vUser.push(i);
+        const fOrig = [5, 12, 20, 23];
+        const vOrig = [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 25];
+        jogosGerados = matrizBase.map(l => l.map(n => fOrig.includes(n) ? fUser[fOrig.indexOf(n)] : vUser[vOrig.indexOf(n)]).sort((a,b)=>a-b));
         document.getElementById('btn-share').style.display = 'block';
         document.getElementById('area-conferidor').style.display = 'block';
-        conferir(); 
-        window.scrollTo(0, document.body.scrollHeight);
+        conferir(); window.scrollTo(0, document.body.scrollHeight);
     }
 
     function conferir() {
         const resDiv = document.getElementById('resultado');
-        const painelResumo = document.getElementById('painel-resumo');
+        const pRes = document.getElementById('painel-resumo');
         resDiv.innerHTML = `<h3>Jogos Detalhados</h3>`;
-        
-        let conta15 = 0;
-        let resumoHTML = "";
-
-        jogosGerados.forEach((jogo, index) => {
-            const acertos = jogo.filter(n => selecionadasResultado.includes(n));
-            if(acertos.length === 15) conta15++;
-
-            const div = document.createElement('div');
-            div.className = 'jogo-item';
-            let html = `<b>JOGO ${(index+1).toString().padStart(2, '0')}</b> - Acertos: <b>${acertos.length}</b><br>`;
-            jogo.forEach(n => {
-                const nStr = n.toString().padStart(2, '0');
-                if (selecionadasResultado.includes(n)) html += `<span class="hit">${nStr}</span> `;
-                else html += `${nStr} `;
-            });
-            div.innerHTML = html;
-            resDiv.appendChild(div);
+        let c15 = 0;
+        jogosGerados.forEach((jogo, idx) => {
+            const ac = jogo.filter(n => selecionadasResultado.includes(n));
+            if(ac.length === 15) c15++;
+            const d = document.createElement('div'); d.className = 'jogo-item';
+            let h = `<b>JOGO ${(idx+1).toString().padStart(2, '0')}</b> - Acertos: <b>${ac.length}</b><br>`;
+            jogo.forEach(n => h += selecionadasResultado.includes(n) ? `<span class="hit">${n.toString().padStart(2, '0')}</span> ` : `${n.toString().padStart(2, '0')} `);
+            d.innerHTML = h; resDiv.appendChild(d);
         });
-
-        // Atualizar painel de resumo
-        painelResumo.style.display = 'block';
-        painelResumo.innerHTML = `RESUMO DE PREMIAÇÃO <span>${conta15} Jogo(s) com 15 Acertos</span>`;
+        pRes.style.display = 'block';
+        pRes.innerHTML = `RESUMO DE PREMIAÇÃO <span>${c15} Jogo(s) com 15 Acertos</span>`;
     }
 
     function limparTudo() {
-        selecionadasFixas = [];
-        selecionadasResultado = [];
-        jogosGerados = [];
-        document.querySelectorAll('.num-btn').forEach(b => {
-            b.classList.remove('selected-fixa');
-            b.classList.remove('selected-check');
-        });
+        selecionadasFixas = []; selecionadasResultado = []; jogosGerados = [];
+        document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected-fixa', 'selected-check'));
         document.getElementById('resultado').innerHTML = '';
         document.getElementById('btn-share').style.display = 'none';
         document.getElementById('area-conferidor').style.display = 'none';
@@ -288,29 +289,20 @@
     }
 
     async function compartilhar() {
-        const fixasStr = [...selecionadasFixas].sort((a,b) => a-b).map(n => n.toString().padStart(2, '0')).join(' ');
-        const vars = [];
-        for(let i=1; i<=25; i++) if(!selecionadasFixas.includes(i)) vars.push(i.toString().padStart(2, '0'));
-        let texto = `// Modalidade........: Lotinha\n// Números...........: 25\n// Marcados..........: 19\n// Fixos.............: 4\n// Garantia..........: 15\n// Condição..........: 15\n// Números Variáveis.: ${vars.join(' ')}\n// Números Fixos.....: ${fixasStr}\n\n`;
-        jogosGerados.forEach((j) => { texto += `${j.map(n => n.toString().padStart(2, '0')).join(' ')}\n`; });
-        texto += `\nCriado por Guinho Lotofacil`;
-
-        if (navigator.share) {
-            try { await navigator.share({ title: '4 Dezenas de Ouro', text: texto }); } 
-            catch (err) { copiarParaClipboard(texto); }
-        } else { copiarParaClipboard(texto); }
+        const fStr = [...selecionadasFixas].sort((a,b)=>a-b).map(n=>n.toString().padStart(2,'0')).join(' ');
+        const v = []; for(let i=1;i<=25;i++) if(!selecionadasFixas.includes(i)) v.push(i.toString().padStart(2,'0'));
+        let t = `// Modalidade........: Lotinha\n// Números...........: 25\n// Marcados..........: 19\n// Fixos.............: 4\n// Garantia..........: 15\n// Condição..........: 15\n// Números Variáveis.: ${v.join(' ')}\n// Números Fixos.....: ${fStr}\n\n`;
+        jogosGerados.forEach(j => t += j.map(n=>n.toString().padStart(2,'0')).join(' ')+'\n');
+        t += `\nCriado por Guinho Lotofacil`;
+        if (navigator.share) { try { await navigator.share({ title: '4 Dezenas de Ouro', text: t }); } catch (e) { copiar(t); } } else { copiar(t); }
     }
 
-    function copiarParaClipboard(texto) {
-        navigator.clipboard.writeText(texto).then(() => { alert("✅ Jogos copiados!"); })
-        .catch(err => {
-            const el = document.createElement('textarea');
-            el.value = texto; document.body.appendChild(el); el.select();
-            document.execCommand('copy'); document.body.removeChild(el);
-            alert("✅ Jogos copiados!");
+    function copiar(t) {
+        navigator.clipboard.writeText(t).then(()=>alert("✅ Jogos copiados!")).catch(()=>{
+            const el = document.createElement('textarea'); el.value = t; document.body.appendChild(el); el.select();
+            document.execCommand('copy'); document.body.removeChild(el); alert("✅ Jogos copiados!");
         });
     }
 </script>
-
 </body>
 </html>
