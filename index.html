@@ -12,6 +12,7 @@
             --check: #2980b9;
             --accent: #e74c3c;
             --light: #ecf0f1;
+            --win-bg: #fff9e6;
         }
 
         body {
@@ -60,7 +61,7 @@
             box-sizing: border-box;
         }
 
-        /* CONTEÚDO PRINCIPAL (OCULTO INICIALMENTE) */
+        /* APP PRINCIPAL */
         #main-app {
             display: none;
             width: 100%;
@@ -141,7 +142,16 @@
             margin-bottom: 8px;
             border-radius: 6px;
             font-family: 'Courier New', Courier, monospace;
-            border-left: 5px solid var(--gold);
+            border-left: 5px solid #ccc;
+            transition: 0.2s;
+        }
+
+        .ganhou-15 {
+            background-color: var(--win-bg) !important;
+            border: 2px solid var(--gold) !important;
+            border-left: 5px solid var(--gold) !important;
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
         }
 
         .hit { background-color: #f1c40f; color: black; font-weight: bold; padding: 2px 4px; border-radius: 3px; }
@@ -155,17 +165,17 @@
 <div id="login-screen">
     <div class="login-box">
         <h1>4 Dezenas de Ouro</h1>
-        <p>Acesso Restrito</p>
-        <input type="password" id="pass-input" placeholder="Digite sua senha">
-        <button class="action-btn btn-generate" style="width: 100%;" onclick="validarSenha()">Entrar no Sistema</button>
-        <p id="error-msg" style="color: red; display: none; margin-top: 10px; font-size: 0.8em;">Senha incorreta!</p>
+        <p>Acesso Protegido</p>
+        <input type="password" id="pass-input" placeholder="Senha de Acesso">
+        <button class="action-btn btn-generate" style="width: 100%;" onclick="validarSenha()">Entrar</button>
+        <p id="error-msg" style="color: red; display: none; margin-top: 10px;">Senha incorreta!</p>
     </div>
 </div>
 
 <div id="main-app">
     <div class="container">
         <h1>4 Dezenas de Ouro</h1>
-        <p class="info">Lotinha 25-19-15-15</p>
+        <p class="info">Lotinha 25-19-15-15 (Garantia de 15)</p>
         
         <h3>1. Selecione 4 Fixas</h3>
         <div class="selector-grid" id="grid-fixas"></div>
@@ -189,18 +199,14 @@
 </div>
 
 <script>
-    // LÓGICA DE SENHA E PERSISTÊNCIA
     const SENHA_MESTRA = "484646";
 
     window.onload = function() {
-        if (localStorage.getItem("acesso_ouro") === "true") {
-            liberarSite();
-        }
+        if (localStorage.getItem("acesso_ouro") === "true") liberarSite();
     };
 
     function validarSenha() {
-        const input = document.getElementById("pass-input").value;
-        if (input === SENHA_MESTRA) {
+        if (document.getElementById("pass-input").value === SENHA_MESTRA) {
             localStorage.setItem("acesso_ouro", "true");
             liberarSite();
         } else {
@@ -213,17 +219,16 @@
         document.getElementById("main-app").style.display = "block";
     }
 
-    // BLOQUEIO DE PROTEÇÃO
     document.onkeydown = function(e) {
         if(event.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
     };
 
-    // LÓGICA DA LOTERIA
     const totalDezenas = 25;
     let selecionadasFixas = [];
     let selecionadasResultado = [];
     let jogosGerados = [];
 
+    // Matriz base (19 dezenas por linha)
     const matrizBase = [[1,2,3,4,5,6,7,8,10,12,13,15,17,18,19,20,23,24,25],[1,2,3,4,5,6,7,8,11,12,13,14,17,20,21,22,23,24,25],[1,2,3,4,5,6,7,8,11,12,13,16,17,18,19,20,21,23,24],[1,2,3,4,5,6,7,9,11,12,13,14,18,19,20,21,23,24,25],[1,2,3,4,5,6,7,9,12,14,16,17,18,19,20,21,23,24,25],[1,2,3,4,5,6,8,9,11,12,13,14,17,18,19,20,22,23,25],[1,2,3,4,5,6,8,9,11,12,13,16,17,18,19,20,21,22,23],[1,2,3,4,5,6,8,12,13,14,16,17,18,20,21,22,23,24,25],[1,2,3,4,5,6,9,10,12,13,14,15,17,18,19,20,21,22,23],[1,2,3,4,5,6,10,11,12,13,14,15,17,18,19,20,21,23,25],[1,2,3,4,5,7,8,9,10,11,12,16,17,19,20,22,23,24,25],[1,2,3,4,5,7,10,12,13,14,15,16,17,19,20,21,22,23,25],[1,2,3,5,6,7,8,9,10,12,13,14,15,18,20,21,22,23,24],[1,2,3,5,6,7,8,9,11,12,13,14,17,18,19,20,21,23,25],[1,2,3,5,6,7,8,10,11,12,13,15,16,17,18,20,21,23,24],[1,2,3,5,6,7,11,12,14,16,17,18,19,20,21,22,23,24,25],[1,2,3,5,6,8,9,10,11,12,14,17,18,19,20,21,22,23,25],[1,2,3,5,7,9,10,11,12,14,15,17,18,19,20,22,23,24,25],[1,2,3,5,7,9,11,12,13,14,16,17,18,19,20,22,23,24,25],[1,2,4,5,6,7,8,9,10,11,12,14,17,18,19,20,22,23,24],[1,2,4,5,6,7,8,9,10,12,14,17,19,20,21,22,23,24,25],[1,2,4,5,6,7,8,9,12,13,14,16,18,19,20,21,22,23,25],[1,2,4,5,6,7,9,12,13,14,15,18,19,20,21,22,23,24,25],[1,2,4,5,6,9,12,13,14,15,16,17,18,19,20,21,23,24,25],[1,2,4,5,7,8,9,11,12,13,14,16,17,19,20,21,22,23,25],[1,2,4,5,7,8,10,12,13,14,16,18,19,20,21,22,23,24,25],[1,2,5,6,7,8,10,11,12,13,14,16,17,18,19,20,21,23,24],[1,2,5,6,8,10,11,12,13,14,16,17,18,19,20,22,23,24,25],[1,3,4,5,6,7,8,9,11,12,15,16,17,18,20,22,23,24,25],[1,3,4,5,6,7,8,9,12,13,14,16,17,18,19,20,22,23,25],[1,3,4,5,6,8,9,10,12,13,14,15,16,17,18,19,20,23,24],[1,3,4,5,6,8,10,11,12,13,14,15,16,17,18,20,21,22,23],[1,3,4,5,7,8,9,11,12,13,14,15,16,17,18,20,21,23,25],[1,3,4,5,7,9,10,11,12,14,16,17,18,19,20,21,22,23,24],[1,3,4,5,7,9,11,12,13,14,15,16,17,18,20,21,23,24,25],[1,3,5,6,7,8,9,11,12,13,14,15,18,19,20,21,23,24,25],[1,3,5,6,7,8,10,11,12,13,14,16,17,18,20,21,22,23,24],[1,3,5,6,7,9,11,12,13,14,15,16,18,19,20,21,22,23,25],[1,3,5,6,7,9,12,13,15,16,17,18,19,20,21,22,23,24,25],[1,3,5,6,7,10,11,12,13,14,15,16,17,18,19,20,23,24,25],[1,3,5,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25],[1,4,5,6,7,8,11,12,13,14,15,17,18,19,20,21,22,23,25],[1,5,6,7,8,10,11,12,13,14,17,18,19,20,21,22,23,24,25],[2,3,4,5,6,7,8,9,12,14,15,16,19,20,21,22,23,24,25],[2,3,4,5,6,7,8,10,11,12,13,14,17,19,20,21,22,23,24],[2,3,4,5,6,7,9,10,11,12,13,16,18,19,20,21,22,23,25],[2,3,4,5,6,7,9,10,12,13,14,16,17,19,20,21,22,23,24],[2,3,4,5,6,7,10,11,12,13,14,15,16,17,20,21,23,24,25],[2,3,4,5,6,8,9,11,12,13,14,15,16,19,20,21,22,23,24],[2,3,4,5,6,8,9,11,12,13,14,15,17,18,20,21,23,24,25],[2,3,4,5,7,9,11,12,13,14,16,17,18,19,20,21,22,23,25],[2,3,4,5,7,10,11,12,13,14,15,17,18,19,20,21,22,23,24],[2,3,4,5,8,9,10,11,12,13,14,15,16,18,19,20,22,23,24],[2,3,5,6,7,8,11,12,13,14,15,16,17,18,20,21,22,23,24],[2,3,5,6,8,9,10,11,12,15,17,18,19,20,21,22,23,24,25],[2,3,5,7,8,9,10,11,12,13,14,16,17,19,20,21,22,23,25],[3,4,5,6,7,8,9,10,12,13,15,17,18,20,21,22,23,24,25],[3,4,5,8,9,11,12,13,14,15,16,17,18,19,20,22,23,24,25],[4,5,6,8,9,11,12,13,14,16,17,18,19,20,21,22,23,24,25],[4,5,7,8,9,10,11,12,14,15,16,17,18,19,20,21,22,23,24]];
 
     const gFixas = document.getElementById('grid-fixas');
@@ -250,31 +255,60 @@
         if (jogosGerados.length > 0) conferir();
     }
 
+    // NOVA FUNÇÃO DE GERAÇÃO CORRIGIDA
     function gerarJogos() {
-        if (selecionadasFixas.length !== 4) return alert("Selecione 4 fixas.");
+        if (selecionadasFixas.length !== 4) return alert("Por favor, selecione 4 dezenas fixas.");
+        
         const fUser = [...selecionadasFixas].sort((a,b)=>a-b);
-        const vUser = []; for(let i=1;i<=25;i++) if(!fUser.includes(i)) vUser.push(i);
-        const fOrig = [5, 12, 20, 23];
+        const vUser = []; 
+        for(let i=1; i<=25; i++) if(!fUser.includes(i)) vUser.push(i);
+
+        // Mapeamento fixo das variáveis originais
         const vOrig = [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 25];
-        jogosGerados = matrizBase.map(l => l.map(n => fOrig.includes(n) ? fUser[fOrig.indexOf(n)] : vUser[vOrig.indexOf(n)]).sort((a,b)=>a-b));
+
+        jogosGerados = matrizBase.map(linha => {
+            // Filtra apenas as dezenas que NÃO eram as fixas originais (5, 12, 20, 23)
+            let apenasVariaveis = linha.filter(n => ![5, 12, 20, 23].includes(n));
+            
+            // Converte essas dezenas para as novas variáveis do usuário
+            let novasVars = apenasVariaveis.map(n => vUser[vOrig.indexOf(n)]);
+            
+            // FORÇA a entrada das 4 fixas escolhidas pelo usuário em cada linha
+            let jogoFinal = [...novasVars, ...fUser];
+            
+            return jogoFinal.sort((a,b) => a-b);
+        });
+
         document.getElementById('btn-share').style.display = 'block';
         document.getElementById('area-conferidor').style.display = 'block';
-        conferir(); window.scrollTo(0, document.body.scrollHeight);
+        conferir(); 
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
     function conferir() {
         const resDiv = document.getElementById('resultado');
         const pRes = document.getElementById('painel-resumo');
-        resDiv.innerHTML = `<h3>Jogos Detalhados</h3>`;
+        resDiv.innerHTML = `<h3>Jogos Gerados</h3>`;
         let c15 = 0;
+
         jogosGerados.forEach((jogo, idx) => {
             const ac = jogo.filter(n => selecionadasResultado.includes(n));
-            if(ac.length === 15) c15++;
-            const d = document.createElement('div'); d.className = 'jogo-item';
+            const is15 = ac.length === 15;
+            if(is15) c15++;
+
+            const d = document.createElement('div'); 
+            d.className = 'jogo-item';
+            if(is15) d.classList.add('ganhou-15');
+
             let h = `<b>JOGO ${(idx+1).toString().padStart(2, '0')}</b> - Acertos: <b>${ac.length}</b><br>`;
-            jogo.forEach(n => h += selecionadasResultado.includes(n) ? `<span class="hit">${n.toString().padStart(2, '0')}</span> ` : `${n.toString().padStart(2, '0')} `);
+            jogo.forEach(n => {
+                const nStr = n.toString().padStart(2, '0');
+                if (selecionadasResultado.includes(n)) h += `<span class="hit">${nStr}</span> `;
+                else h += `${nStr} `;
+            });
             d.innerHTML = h; resDiv.appendChild(d);
         });
+
         pRes.style.display = 'block';
         pRes.innerHTML = `RESUMO DE PREMIAÇÃO <span>${c15} Jogo(s) com 15 Acertos</span>`;
     }
@@ -291,7 +325,7 @@
     async function compartilhar() {
         const fStr = [...selecionadasFixas].sort((a,b)=>a-b).map(n=>n.toString().padStart(2,'0')).join(' ');
         const v = []; for(let i=1;i<=25;i++) if(!selecionadasFixas.includes(i)) v.push(i.toString().padStart(2,'0'));
-        let t = `// Modalidade........: Lotinha\n// Números...........: 25\n// Marcados..........: 19\n// Fixos.............: 4\n// Garantia..........: 15\n// Condição..........: 15\n// Números Variáveis.: ${v.join(' ')}\n// Números Fixos.....: ${fStr}\n\n`;
+        let t = `// Modalidade........: Lotinha\n// Números...........: 25\n// Marcados..........: 19\n// Fixos.............: 4\n// Garantia..........: 15\n// Condição..........: 15\n// Números Fixos.....: ${fStr}\n\n`;
         jogosGerados.forEach(j => t += j.map(n=>n.toString().padStart(2,'0')).join(' ')+'\n');
         t += `\nCriado por Guinho Lotofacil`;
         if (navigator.share) { try { await navigator.share({ title: '4 Dezenas de Ouro', text: t }); } catch (e) { copiar(t); } } else { copiar(t); }
